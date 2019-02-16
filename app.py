@@ -12,4 +12,7 @@ os.environ["SPOTIPY_CLIENT_SECRET"] = '85c54c906e6b4695858061f2291f9838'
 os.environ["SPOTIPY_REDIRECT_URI"] = 'https://httpbin.org/get'
 
 token = util.prompt_for_user_token("user", scope)
-print(token)
+
+if token:
+        sp = spotipy.Spotify(auth=token)
+        print(sp.current_user())
