@@ -9,7 +9,7 @@ scope = 'user-library-read playlist-read-private playlist-read-collaborative use
 
 os.environ["SPOTIPY_CLIENT_ID"] = 'e4fecf947d534799b152a18023bae635'
 os.environ["SPOTIPY_CLIENT_SECRET"] = '85c54c906e6b4695858061f2291f9838'
-os.environ["SPOTIPY_REDIRECT_URI"] = 'http://127.0.0.1:5000'
+os.environ["SPOTIPY_REDIRECT_URI"] = 'http://spotify-finetune.herokuapp.com'
 
 # token = util.prompt_for_user_token("user", scope)
 #
