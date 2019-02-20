@@ -95,7 +95,7 @@
                             <tr>
                             <th>Name</th>
                             <th>Track Count</th>
-                            <th>Length</th>
+                            <th>Owner</th>
                             </tr>
                         </thead>
                         <tbody> </tbody>
@@ -121,22 +121,76 @@
                             <a class="btn btn-primary btn-sm pull-left" id='pick' role="button">back</a>
                         </div>
                     </div>
-                    <div class="panel panel-default">
+                    <div class="panel panel-default new-playlist-top">
                         <div class="panel-body">
                             <div class="form-inline">
                                 <div class="form-group">
-                                    <label >Name of New Playlist</label>
+                                    <label >Name of New Playlist: </label>
                                     <input id="name" type="text"" class="form-control" placeholder="Pomodoro">
                                 </div>
                                 <div class="form-group">
-                                    <label >Desired Length</label>
+                                    <label >No. of Songs: </label>
                                     <input id="length" type="number" class="form-control" placeholder="15">
                                 </div>
                                 <!-- <button id="filter-button" class="btn btn-default btn-sm">Filter</button> -->
                             </div>
                         </div>
-                    </div>
-
+                        <div class="container metric">
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <div class="slider-label">
+                                      <label>Danceability</label>
+                                    </div>
+                                </div>
+                                <div class="col-xs-6">
+                                    <div class="slidecontainer">
+                                      <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="container metric">
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <div class="slider-label">
+                                      <label>Energy</label>
+                                    </div>
+                                </div>
+                                <div class="col-xs-6">
+                                    <div class="slidecontainer">
+                                      <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="container metric">
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <div class="slider-label">
+                                      <label>Acousticness</label>
+                                    </div>
+                                </div>
+                                <div class="col-xs-6">
+                                    <div class="slidecontainer">
+                                      <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="container metric">
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <div class="slider-label">
+                                      <label>Valence (Positivity)</label>
+                                    </div>
+                                </div>
+                                <div class="col-xs-6">
+                                    <div class="slidecontainer">
+                                      <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                 </div>
           </div>
       </div>
@@ -359,7 +413,7 @@ function fetchSinglePlaylist(playlist) {
     disableSaveButton();
     songTable.clear();
     resetState();
-    $("#playlist-title").text(playlist['name'] + ": " + playlist['length'].toString() + " mins");
+    $("#playlist-title").text(playlist['name']);
     $("#playlist-title").attr('value', playlists['uri']);
     $(".spinner2").hide();
     curPlaylist = playlist['uri']
@@ -434,7 +488,7 @@ function playlistLoaded(playlists) {
 
             var tdTrackCount = $("<td>").text(playlist["tracks"]);
 
-            var tdOwner = $("<td>").text(playlist["length"].toString() + " mins");
+            var tdOwner = $("<td>").text(playlist["owner"]);
 
             tr.append(tdName);
             tr.append(tdTrackCount);
