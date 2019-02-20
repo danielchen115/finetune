@@ -29,7 +29,7 @@ class Track:
 #         sp = spotipy.Spotify(auth=token)
 
 
-def get_playlists():
+def get_playlists(sp):
        playlists_objects = sp.current_user_playlists()["items"]
        playlists = {}
        for playlist in playlists_objects:
@@ -47,7 +47,6 @@ def get_playlist_tracks(playlist_id):
 
 def get_all_saved_tracks():
     tracks = {}
-   # track_objects = sp.current_user_saved_tracks(50)["items"]
     results = sp.current_user_saved_tracks(50)
     track_objects = results["items"]
     while results['next']:
