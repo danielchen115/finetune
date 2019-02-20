@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link type="text/css" href="static/styles.css" rel="stylesheet" />
+    <!-- <link rel="stylesheet" type="text/css"
+    href="//cdn.datatables.net/1.10.7/css/jquery.dataTables.min.css"> -->
+    <link href="static/dist/sp-bootstrap.min.css" rel="stylesheet" media="screen">
+    <link rel="stylesheet" type="text/css"
+    href="//cdn.datatables.net/plug-ins/1.10.7/integration/bootstrap/3/dataTables.bootstrap.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <link rel="shortcut icon" href="static/images/favicon.png">
+    <title>FineTune</title>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+      <script type=text/javascript>
+           $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+      </script>
+
+</head>
+  <body >
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand" id='test' href="https://www.spotify.com">
+            <span class="navbar-logo">Spotify</span>
+            <span class="navbar-title">FineTune</span>
+          </a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <a href="http://www.spotify.com" class="btn btn-primary navbar-btn navbar-right">Get
+          Spotify</a>
+        </div><!--/.navbar-collapse -->
+      </div>
+    </div>
+
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+      <div id='intro'>
+      <div id='main' class="top worker jumbotron jumbotron-hero container-fluid">
+          <div  id="jumbo-dialog">
+            <h1 id='ttitle' >FineTune</h1>
+            <p>  Login with your Spotify account to get started</p>
+
+            <p><a class="btn btn-primary btn-lg" id='go' role="button">Login with Spotify</a></p>
+          </div>
+      </div>
+
+        <div class="container worker ">
+          <div class="row features">
+             <div class="col-md-offset-2 col-md-8">
+                    <h2 class="text-center">Curate your music for every occasion.</h2>
+                    <p>
+                    <b>FineTune</b> lets you set the tone of your playlist with metrics such as <i>danceability, energy, acousticness,</i> and more.
+                    Simply set the mood you're looking for, and we'll build a playlist for you out of the songs in your library, or another one of your playlists.
+                        <b>Sign in</b> to Spotify and give it a try!
+                    </p>
+                    <ol>
+                        <li> <b> Login </b> with your Spotify credentials 
+                        <li> <b> Pick </b> your playlist
+                        <li> <b> Configure </b> your metrics
+                        <li>  <b> Save </b> the playlist
+                    </ol>
+
+                    <!--<h2 class="text-center">Turn your music into a Timer!</h2>-->
+
+                    <!--<h2 class="text-center">FAQ</h2>-->
+                    <!--<p class="text-center">-->
+                        <!--Here are some answers to questions about <b> Timeify </b>-->
+                    <!--</p>-->
+                    <!--<ol>-->
+                        <!--<li> <b> How was this built? </b> This was created using Python, JS and the <a href="http://developer.spotify.com">Spotify</a> API.-->
+                        <!--<li><b> Is the source available</b> - Yes, you can find-->
+                        <!--it on <a href="https://github.com/jeffreypann/timeify">Github</a>-->
+                        <!--<li> Can I <b>Contribute</b>? - Of course! You can find the repo linked above-->
+                        <!--<li> <b> Does Timeify overwrite my playlist when I save?</b> - No, it creates a new playlist and saves it your library.-->
+                        <!--<li> I have feedback/ideas - Sure! shoot me a mail at <b>jeffreypann@gmail.com</b> -->
+                    <!--</ol>-->
+              </div> 
+          </div>
+        </div>
+
+      <div class="top jumbotron container-fluid">
+          <p id='info' class="text-center"></p>
+
+          <div class="worker" id='playlists'> 
+                <h2 class="prompt" > Pick a playlist </h2>
+                <img class='spinner' width='100' alt='spinner' src='static/images/ajaxSpinner.gif'>
+
+                <div class="panel panel-default">
+                    <table id='playlist-list' class="table">
+                        <thead>
+                            <tr>
+                            <th>Name</th>
+                            <th>Track Count</th>
+                            <th>Length</th>
+                            </tr>
+                        </thead>
+                        <tbody> </tbody>
+                    </table>
+                </div>
+          </div>
+    <div class="worker" id='single-playlist'> 
+                <h2> <a id='playlist-title'></a> </h2>
+                <img class='spinner2' width='100' alt='spinner' src='static/images/ajaxSpinner.gif'>
+                <div id='single-playlist-contents'>
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div class='btn-group pull-right'>
+                              <button id='save' type='button' class='btn btn-primary btn-sm has-spinner'><i class="fa fa-spinner fa-spin"></i> Save New Playlist</button>
+                              <button id='saveDropdown' class='btn btn-primary btn-sm dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
+                                <span class='caret'></span>
+                                <span class='sr-only'>Toggle Dropdown</span>
+                              </button>
+                              <ul class='dropdown-menu'>
+                                <li><a id='dropSave' href='#'>Save New Playlist</a></li>
+                              </ul>
+                            </div>
+                            <a class="btn btn-primary btn-sm pull-left" id='pick' role="button">back</a>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div class="form-inline">
+                                <div class="form-group">
+                                    <label >Name of New Playlist</label>
+                                    <input id="name" type="text"" class="form-control" placeholder="Pomodoro">
+                                </div>
+                                <div class="form-group">
+                                    <label >Desired Length</label>
+                                    <input id="length" type="number" class="form-control" placeholder="15">
+                                </div>
+                                <!-- <button id="filter-button" class="btn btn-default btn-sm">Filter</button> -->
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+          </div>
+      </div>
+      </div>
+
+    <div id="footer">
+      <div class="container text-center">
+            <p class="text-muted">
+                Powered by <a href="http://spotify.com">Spotify</a>
+                Created by <a href="https://github.com/danielchen115">@danielchen115</a>
+            </p>
+      </div>
+    </div>
+    <script src="static/lib/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" charset="utf-8"
+        src="//cdn.datatables.net/1.10.7/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" charset="utf-8"
+        src="//cdn.datatables.net/plug-ins/1.10.7/integration/bootstrap/3/dataTables.bootstrap.min.js"></script>
+    <!-- Deprecated: Replacement is the datetime plug-in (http://datatables.net/blog/2014-12-18) -->
+    <script type="text/javascript" charset="utf-8"
+        src="//cdn.datatables.net/plug-ins/1.10.7/sorting/time.js"></script>
+    <script src="static/lib/bootstrap.min.js"></script>
+    <script src="static/lib/underscore-min.js"></script>
+    <script type="text/javascript" charset="utf-8"
+        src="//cdnjs.cloudflare.com/ajax/libs/q.js/1.4.1/q.min.js"></script>
+    <script src="static/config.js"></script>
+
+<script>
+"use strict";
+var accessToken = null;
+var curUserID = null;
+var curPlaylist = null;
+var albumDates = {};
+var audio = $("<audio>");
+var songTable;
+var cols = [
+    'order', 'title', 'artist', 'Date', 'BPM', 'energy',
+    'danceability', 'loudness', 'valence', 'duration',
+    'acousticness', 'popularity'
+];
+
+// disable save while loading and saving, no matter what the saved state
+var forceDisableSave = false;
+
+// state of the saved playlist, so save button is only shown when different
+var savedState = {};
+
+function error(msg) {
+    info(msg);
+}
+
+function getCurSortName() {
+    var currentState = getPlaylistState();
+    var prefix = (currentState.order[1] == 'asc') ? 'increasing ' : 'decreasing ';
+    return prefix + cols[currentState.order[0]];
+}
+
+function info(msg) {
+    $("#info").text(msg);
+}
+
+function authorizeUser() {
+    var scopes = 'user-library-read playlist-read-private playlist-read-collaborative user-modify-playback-state user-read-cur' +
+        'rently-playing user-read-playback-state user-top-read user-read-recently-played app-remote-control streaming' +
+        ' user-read-private user-library-read user-library-modify';
+
+    var url = 'https://accounts.spotify.com/authorize?client_id=' + SPOTIFY_CLIENT_ID +
+        '&response_type=token' +
+        '&scope=' + encodeURIComponent(scopes) +
+        '&redirect_uri=' + encodeURIComponent(SPOTIFY_REDIRECT_URI);
+    document.location = url;
+}
+function parseArgs() {
+    var hash = location.hash.replace(/#/g, '');
+    var all = hash.split('&');
+    var args = {};
+    _.each(all, function(keyvalue) {
+        var kv = keyvalue.split('=');
+        var key = kv[0];
+        var val = kv[1];
+        args[key] = val;
+    });
+    return args;
+}
+
+function callSpotify(type, url, json, callback) {
+    $.ajax(url, {
+        type: type,
+        data: JSON.stringify(json),
+        dataType: 'json',
+        headers: {
+            'Authorization': 'Bearer ' + accessToken,
+            'Content-Type': 'application/json'
+        },
+        success: function(r) {
+            callback(true, r);
+        },
+        error: function(r) {
+            // 2XX status codes are good, but some have no
+            // response data which triggers the error handler
+            // convert it to goodness.
+            if (r.status >= 200 && r.status < 300) {
+                callback(true, r);
+            } else {
+                callback(false, r);
+            }
+        }
+    });
+}
+
+function callSpotifyQ(type, url, json) {
+    return Q.Promise(function(resolve, reject, notify) {
+        $.ajax(url, {
+            type: type,
+            data: JSON.stringify(json),
+            dataType: 'json',
+            headers: {
+                'Authorization': 'Bearer ' + accessToken,
+                'Content-Type': 'application/json'
+            },
+            beforeSend : function () {
+                console.log(type + ": " + this.url);
+            },
+            success: function(data) {
+                resolve(data);
+            },
+            error: function(jqXHR, textStatus) {
+                // 2XX status codes are good, but some have no
+                // response data which triggers the error handler
+                // convert it to goodness.
+                if (jqXHR.status >= 200 && jqXHR.status < 300) {
+                    resolve(undefined);
+                } else {
+                    reject(textStatus);
+                }
+            }
+        });  
+    });
+}
+
+function getSpotify(url, data, callback) {
+    $.ajax(url, {
+        dataType: 'json',
+        data: data,
+        headers: {
+            'Authorization': 'Bearer ' + accessToken
+        },
+        success: function(r) {
+            callback(r);
+        },
+        error: function(r) {
+            callback(null);
+        }
+    });
+}
+
+function getSpotifyQ(url, data) {
+    return Q.Promise(function(resolve, reject, notify) {
+        $.ajax(url, {
+            dataType: 'json',
+            data: data,
+            headers: {
+                'Authorization': 'Bearer ' + accessToken
+            },
+            beforeSend : function () {
+                // console.log("GET: " + this.url);
+            },
+            success: function(data) {
+                resolve(data);
+            },
+            error: function(jqXHR, textStatus) {
+                if (jqXHR.status >= 200 && jqXHR.status < 300) {
+                    resolve(undefined);
+                } else {
+                    reject(textStatus);
+                }
+            }
+        });
+    });
+}
+
+function showPlaylists() {
+    $(".worker").hide();
+    $("#playlists").show();
+}
+function confirmation(link){
+    $("#single-playlist-contents").hide();
+    $("#playlist-title").text("Playlist successfully created! Click here to see it").attr('href',link);
+
+}
+function savePlaylist(){
+    var length = $("#length").val()
+    var name = $("#name").val()
+        $.ajax({
+        data :{
+            username : curUserID,
+            token : accessToken,
+            name : name,
+            playlist : curPlaylist,
+            length : length
+        },
+        type : 'POST',
+        url : '/save',
+        success: function (data) {
+            if (data){
+                confirmation(data);
+            }
+        }
+
+    });
+}
+
+function fetchSinglePlaylist(playlist) {
+    $(".worker").hide();
+    $("#single-playlist").show();
+    $("#single-playlist-contents").hide();
+    $(".spinner2").show();
+    $("#song-table tbody").empty();
+    window.scrollTo(0,0);
+    disableSaveButton();
+    songTable.clear();
+    resetState();
+    $("#playlist-title").text(playlist['name'] + ": " + playlist['length'].toString() + " mins");
+    $("#playlist-title").attr('value', playlists['uri']);
+    $(".spinner2").hide();
+    curPlaylist = playlist['uri']
+    info("");
+    $("#single-playlist-contents").show();
+    $("#save,#saveDropdown").attr('disabled', false);
+
+}
+
+
+function updateTable(tracks) {
+    $("#single-playlist-contents").show();
+    _.each(tracks.items, function(item, i) {
+        if (item.track) {
+            var track = item.track;
+            addTrack(songTable, track);
+        }
+    });
+    songTable.draw();
+    $(".spinner2").hide();
+}
+
+
+
+function fetchPlaylists(uid, callback) {
+    $("#playlist-list tbody").empty();
+    $(".prompt").hide();
+    $(".spinner").show();
+
+    info("Getting your playlists");
+    $.ajax({
+        data :{
+            username : curUserID,
+            token : accessToken
+        },
+        type : 'POST',
+        url : '/playlists',
+        success: function (data) {
+            playlistLoaded(data.playlists)
+        }
+
+    });
+    
+}
+function fetchCurrentUserProfile(callback) {
+    var url = 'https://api.spotify.com/v1/me';
+    getSpotify(url, null, callback);
+}
+
+function goodPlaylist(playlist) {
+    return playlist.tracks.total > 0; // && playlist.owner.id == curUserID;
+}
+
+function playlistLoaded(playlists) {
+    var pl = $("#playlist-list tbody");
+    $(".prompt").show();
+    $(".spinner").hide();
+    if (playlists) {
+        info("");
+        _.each(playlists, function(playlist) {
+            var tr = $("<tr>");
+
+            var tdName = $("<td>")
+
+            var aName = $("<a>")
+                .text(playlist['name'])
+                .addClass('hoverable')
+                .on('click', function() {
+                    fetchSinglePlaylist(playlist);
+                });
+            tdName.append(aName);
+
+            var tdTrackCount = $("<td>").text(playlist["tracks"]);
+
+            var tdOwner = $("<td>").text(playlist["length"].toString() + " mins");
+
+            tr.append(tdName);
+            tr.append(tdTrackCount);
+            tr.append(tdOwner);
+            pl.append(tr);
+        });
+        if (playlists.next) {
+            getSpotify(playlists.next, null, playlistLoaded);
+        }
+    } else {
+        error("Sorry, I couldn't find your playlists");
+    }
+}
+
+function loadPlaylists(uid) {
+    $("#playlists").show();
+    fetchPlaylists(uid, playlistLoaded);
+}
+
+function resetState() {
+    songTable.order([0, 'asc']);
+
+    $('#min-bpm').val("");
+    $('#max-bpm').val("");
+    $('#include-double').prop('checked', true);
+
+    saveState();
+}
+
+// we keep track of which column we last sorted on so we
+// can enable or disable the save button as appropriate
+function getPlaylistState() {
+    return
+}
+
+function saveState() {
+    savedState = getPlaylistState();
+}
+
+function isSavable() {
+    return !_.isEqual(savedState, getPlaylistState());
+}
+
+function setNeedsSave(state) {
+    if (state) {
+        $("#save,#saveDropdown").attr('disabled', false);
+        $("#save,#saveDropdown").removeClass('btn-warning');
+        $("#save,#saveDropdown").addClass('btn-primary');
+    } else {
+        $("#save,#saveDropdown").attr('disabled', true);
+        $("#save,#saveDropdown").addClass('btn-warning');
+        $("#save,#saveDropdown").removeClass('btn-primary');
+    }
+    $("#save,#saveDropdown").attr('disabled', false);
+}
+
+function updateSaveButtonState() {
+    setNeedsSave(!forceDisableSave && isSavable());
+}
+
+function disableSaveButton() {
+    forceDisableSave = true;
+    updateSaveButtonState();
+}
+
+function enableSaveButtonWhenNeeded() {
+    forceDisableSave = false;
+    updateSaveButtonState();
+}
+
+function showSaveSpinner(showSpinner) {
+    if (showSpinner) {
+        $('#save').addClass('active');
+    } else {
+        $('#save').removeClass('active');
+    }
+}
+
+function initTable() {
+    var table = $("#song-table").DataTable( {
+            paging: false,
+            searching: true,  // searching must be enabled for filtering to work
+            // scrollY:'300px',
+            info:false,
+            dom:"t", // only show table (exclude search bar)
+            columnDefs: [
+                { type : "time-uni", targets:9},
+            ]
+     });
+
+    table.on('order.dt', function() {
+        updateSaveButtonState();
+    });
+
+    $("#song-table tbody").on( 'click', 'tr', function () {
+        if ( $(this).hasClass('selected') ) {
+            $(this).removeClass('selected');
+            var row = songTable.row( $(this) );
+            stopTrack();
+        } else {
+            table.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+            var row = songTable.row( $(this) );
+            var rowData = row.data();
+            var track = rowData[rowData.length - 1];
+            playTrack(track);
+        }
+    } );
+    return table;
+}
+
+$(document).ready(
+
+    function() {
+        songTable = initTable();
+        var args = parseArgs();
+
+
+        if ('error' in args) {
+            error("Sorry, I can't read your playlists from Spotify without authorization");
+            $("#go").show();
+            $("#go").on('click', function() {
+                authorizeUser();
+                get_Playlists();
+            });
+        } else if ('access_token' in args) {
+            accessToken = args['access_token'];
+            $(".worker").hide();
+            fetchCurrentUserProfile(function(user) {
+                if (user) {
+                    curUserID = user.id;
+                    $("#who").text(user.id);
+                    loadPlaylists(user.id);
+                } else {
+                    error("Trouble getting the user profile");
+                }
+            });
+        } else {
+            $("#go").show();
+            $("#go").on('click', function() {
+                authorizeUser();
+                get_Playlists();
+            });
+        }
+        $("#test").on('click', function() {
+            get_Playlists();
+        });
+
+        $("#save,#dropSave").on('click', function() {
+            savePlaylist();
+        });
+        $("#dropOverwrite").on('click', function() {
+            savePlaylist(curPlaylist, false);
+        });
+
+        $("#pick").on('click', function() {
+            showPlaylists();
+        });
+
+        $('#min-bpm,#max-bpm,#include-double').on('keyup change', function() {
+            songTable.draw();
+            updateSaveButtonState();
+        });
+    }
+);
+
+</script>
+
+</body>
+</html>
