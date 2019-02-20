@@ -9,11 +9,11 @@ scope = 'user-library-read playlist-read-private playlist-read-collaborative use
 
 os.environ["SPOTIPY_CLIENT_ID"] = 'e4fecf947d534799b152a18023bae635'
 os.environ["SPOTIPY_CLIENT_SECRET"] = '85c54c906e6b4695858061f2291f9838'
-os.environ["SPOTIPY_REDIRECT_URI"] = 'http://127.0.0.1:5000'
+os.environ["SPOTIPY_REDIRECT_URI"] = 'http://spotify-finetune.herokuapp.com'
 
-token = util.prompt_for_user_token("user", scope)
-
-username = "daniel.chen115"
+# token = util.prompt_for_user_token("user", scope)
+#
+# username = "daniel.chen115"
 
 class Track:
     danceability = 0
@@ -25,8 +25,8 @@ class Track:
         self.id = id
         self.name = name
 
-if token:
-        sp = spotipy.Spotify(auth=token)
+# if token:
+#         sp = spotipy.Spotify(auth=token)
 
 
 def get_playlists():
@@ -93,15 +93,15 @@ def get_most_related(num_wanted, playlist_id=None):
     tracks.sort(key=lambda x: x.score)
     return tracks[:num_wanted]
 
-targets = {
-    "danceability": 1,
-    "energy": 1,
-    "acousticness": 0.5,
-    "valence": 1
-}
-
-test = get_most_related(2000)
-print(test)
-print([track.score for track in test])
+# targets = {
+#     "danceability": 1,
+#     "energy": 1,
+#     "acousticness": 0.5,
+#     "valence": 1
+# }
+#
+# test = get_most_related(2000)
+# print(test)
+# print([track.score for track in test])
 
 #7qkm4SsiK3T1nfHomYKojy
