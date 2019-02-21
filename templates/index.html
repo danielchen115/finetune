@@ -95,7 +95,7 @@
                             <tr>
                             <th>Name</th>
                             <th>Track Count</th>
-                            <th>Length</th>
+                            <th>Owner</th>
                             </tr>
                         </thead>
                         <tbody> </tbody>
@@ -121,22 +121,76 @@
                             <a class="btn btn-primary btn-sm pull-left" id='pick' role="button">back</a>
                         </div>
                     </div>
-                    <div class="panel panel-default">
+                    <div class="panel panel-default new-playlist-top">
                         <div class="panel-body">
                             <div class="form-inline">
                                 <div class="form-group">
-                                    <label >Name of New Playlist</label>
-                                    <input id="name" type="text"" class="form-control" placeholder="Pomodoro">
+                                    <label >Name of New Playlist: </label>
+                                    <input id="name" type="text" class="form-control" placeholder="Pomodoro">
                                 </div>
                                 <div class="form-group">
-                                    <label >Desired Length</label>
-                                    <input id="length" type="number" class="form-control" placeholder="15">
+                                    <label >No. of Songs: </label>
+                                    <input id="numSongs" type="number" class="form-control" placeholder="15">
                                 </div>
                                 <!-- <button id="filter-button" class="btn btn-default btn-sm">Filter</button> -->
                             </div>
                         </div>
-                    </div>
-
+                        <div class="container metric">
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <div class="slider-label">
+                                      <label>Danceability</label>
+                                    </div>
+                                </div>
+                                <div class="col-xs-6">
+                                    <div class="slidecontainer">
+                                      <input type="range" min="1" max="100" value="50" class="slider" id="danceability">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="container metric">
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <div class="slider-label">
+                                      <label>Energy</label>
+                                    </div>
+                                </div>
+                                <div class="col-xs-6">
+                                    <div class="slidecontainer">
+                                      <input type="range" min="1" max="100" value="50" class="slider" id="energy">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="container metric">
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <div class="slider-label">
+                                      <label>Acousticness</label>
+                                    </div>
+                                </div>
+                                <div class="col-xs-6">
+                                    <div class="slidecontainer">
+                                      <input type="range" min="1" max="100" value="50" class="slider" id="acousticness">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="container metric">
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <div class="slider-label">
+                                      <label>Valence (Positivity)</label>
+                                    </div>
+                                </div>
+                                <div class="col-xs-6">
+                                    <div class="slidecontainer">
+                                      <input type="range" min="1" max="100" value="50" class="slider" id="valence">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                 </div>
           </div>
       </div>
@@ -188,12 +242,6 @@ function error(msg) {
     info(msg);
 }
 
-function getCurSortName() {
-    var currentState = getPlaylistState();
-    var prefix = (currentState.order[1] == 'asc') ? 'increasing ' : 'decreasing ';
-    return prefix + cols[currentState.order[0]];
-}
-
 function info(msg) {
     $("#info").text(msg);
 }
@@ -201,7 +249,7 @@ function info(msg) {
 function authorizeUser() {
     var scopes = 'user-library-read playlist-read-private playlist-read-collaborative user-modify-playback-state user-read-cur' +
         'rently-playing user-read-playback-state user-top-read user-read-recently-played app-remote-control streaming' +
-        ' user-read-private user-library-read user-library-modify';
+        ' user-read-private user-library-read user-library-modify playlist-modify-public playlist-modify-private';
 
     var url = 'https://accounts.spotify.com/authorize?client_id=' + SPOTIFY_CLIENT_ID +
         '&response_type=token' +
@@ -222,60 +270,6 @@ function parseArgs() {
     return args;
 }
 
-function callSpotify(type, url, json, callback) {
-    $.ajax(url, {
-        type: type,
-        data: JSON.stringify(json),
-        dataType: 'json',
-        headers: {
-            'Authorization': 'Bearer ' + accessToken,
-            'Content-Type': 'application/json'
-        },
-        success: function(r) {
-            callback(true, r);
-        },
-        error: function(r) {
-            // 2XX status codes are good, but some have no
-            // response data which triggers the error handler
-            // convert it to goodness.
-            if (r.status >= 200 && r.status < 300) {
-                callback(true, r);
-            } else {
-                callback(false, r);
-            }
-        }
-    });
-}
-
-function callSpotifyQ(type, url, json) {
-    return Q.Promise(function(resolve, reject, notify) {
-        $.ajax(url, {
-            type: type,
-            data: JSON.stringify(json),
-            dataType: 'json',
-            headers: {
-                'Authorization': 'Bearer ' + accessToken,
-                'Content-Type': 'application/json'
-            },
-            beforeSend : function () {
-                console.log(type + ": " + this.url);
-            },
-            success: function(data) {
-                resolve(data);
-            },
-            error: function(jqXHR, textStatus) {
-                // 2XX status codes are good, but some have no
-                // response data which triggers the error handler
-                // convert it to goodness.
-                if (jqXHR.status >= 200 && jqXHR.status < 300) {
-                    resolve(undefined);
-                } else {
-                    reject(textStatus);
-                }
-            }
-        });  
-    });
-}
 
 function getSpotify(url, data, callback) {
     $.ajax(url, {
@@ -293,31 +287,6 @@ function getSpotify(url, data, callback) {
     });
 }
 
-function getSpotifyQ(url, data) {
-    return Q.Promise(function(resolve, reject, notify) {
-        $.ajax(url, {
-            dataType: 'json',
-            data: data,
-            headers: {
-                'Authorization': 'Bearer ' + accessToken
-            },
-            beforeSend : function () {
-                // console.log("GET: " + this.url);
-            },
-            success: function(data) {
-                resolve(data);
-            },
-            error: function(jqXHR, textStatus) {
-                if (jqXHR.status >= 200 && jqXHR.status < 300) {
-                    resolve(undefined);
-                } else {
-                    reject(textStatus);
-                }
-            }
-        });
-    });
-}
-
 function showPlaylists() {
     $(".worker").hide();
     $("#playlists").show();
@@ -328,15 +297,21 @@ function confirmation(link){
 
 }
 function savePlaylist(){
-    var length = $("#length").val()
-    var name = $("#name").val()
+    var target = {
+        danceability: $("#danceability").val(),
+        energy: $("#energy").val(),
+        acousticness: $("#acousticness").val(),
+        valence: $("#valence").val()
+
+    };
         $.ajax({
         data :{
             username : curUserID,
             token : accessToken,
-            name : name,
+            name : $("#name").val(),
             playlist : curPlaylist,
-            length : length
+            target : target,
+            numSongs : $("#numSongs").val()
         },
         type : 'POST',
         url : '/save',
@@ -359,7 +334,7 @@ function fetchSinglePlaylist(playlist) {
     disableSaveButton();
     songTable.clear();
     resetState();
-    $("#playlist-title").text(playlist['name'] + ": " + playlist['length'].toString() + " mins");
+    $("#playlist-title").text(playlist['name']);
     $("#playlist-title").attr('value', playlists['uri']);
     $(".spinner2").hide();
     curPlaylist = playlist['uri']
@@ -368,21 +343,6 @@ function fetchSinglePlaylist(playlist) {
     $("#save,#saveDropdown").attr('disabled', false);
 
 }
-
-
-function updateTable(tracks) {
-    $("#single-playlist-contents").show();
-    _.each(tracks.items, function(item, i) {
-        if (item.track) {
-            var track = item.track;
-            addTrack(songTable, track);
-        }
-    });
-    songTable.draw();
-    $(".spinner2").hide();
-}
-
-
 
 function fetchPlaylists(uid, callback) {
     $("#playlist-list tbody").empty();
@@ -409,10 +369,6 @@ function fetchCurrentUserProfile(callback) {
     getSpotify(url, null, callback);
 }
 
-function goodPlaylist(playlist) {
-    return playlist.tracks.total > 0; // && playlist.owner.id == curUserID;
-}
-
 function playlistLoaded(playlists) {
     var pl = $("#playlist-list tbody");
     $(".prompt").show();
@@ -434,7 +390,7 @@ function playlistLoaded(playlists) {
 
             var tdTrackCount = $("<td>").text(playlist["tracks"]);
 
-            var tdOwner = $("<td>").text(playlist["length"].toString() + " mins");
+            var tdOwner = $("<td>").text(playlist["owner"]);
 
             tr.append(tdName);
             tr.append(tdTrackCount);
@@ -498,19 +454,6 @@ function updateSaveButtonState() {
 function disableSaveButton() {
     forceDisableSave = true;
     updateSaveButtonState();
-}
-
-function enableSaveButtonWhenNeeded() {
-    forceDisableSave = false;
-    updateSaveButtonState();
-}
-
-function showSaveSpinner(showSpinner) {
-    if (showSpinner) {
-        $('#save').addClass('active');
-    } else {
-        $('#save').removeClass('active');
-    }
 }
 
 function initTable() {

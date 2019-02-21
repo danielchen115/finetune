@@ -3,17 +3,11 @@ import sys
 import spotipy
 import spotipy.util as util
 
-scope = 'user-library-read playlist-read-private playlist-read-collaborative user-modify-playback-state user-read-cur' \
-        'rently-playing user-read-playback-state user-top-read user-read-recently-played app-remote-control streaming' \
-        ' user-read-private user-library-read user-library-modify'
 
 os.environ["SPOTIPY_CLIENT_ID"] = 'e4fecf947d534799b152a18023bae635'
 os.environ["SPOTIPY_CLIENT_SECRET"] = '85c54c906e6b4695858061f2291f9838'
 os.environ["SPOTIPY_REDIRECT_URI"] = 'http://127.0.0.1:5000'
 
-token = util.prompt_for_user_token("user", scope)
-
-username = "daniel.chen115"
 
 class Track:
     danceability = 0
@@ -25,19 +19,21 @@ class Track:
         self.id = id
         self.name = name
 
-if token:
-        sp = spotipy.Spotify(auth=token)
 
-
-def get_playlists():
+def get_playlists(sp):
        playlists_objects = sp.current_user_playlists()["items"]
        playlists = {}
        for playlist in playlists_objects:
-           playlists[playlist["id"]] = playlist["name"]
+           playlists[playlist["id"]] = {
+               "uri": playlist["uri"],
+               "name": playlist["name"],
+               "tracks": playlist["tracks"]["total"],
+               "owner": playlist["owner"]["display_name"]
+           }
        return playlists
 
 
-def get_playlist_tracks(playlist_id):
+def get_playlist_tracks(sp, playlist_id, username):
     tracks = {}
     track_objects = sp.user_playlist_tracks(username, playlist_id, "items(track(id,name))")["items"]
     for track in track_objects:
@@ -45,9 +41,8 @@ def get_playlist_tracks(playlist_id):
     return tracks
 
 
-def get_all_saved_tracks():
+def get_all_saved_tracks(sp):
     tracks = {}
-   # track_objects = sp.current_user_saved_tracks(50)["items"]
     results = sp.current_user_saved_tracks(50)
     track_objects = results["items"]
     while results['next']:
@@ -58,9 +53,13 @@ def get_all_saved_tracks():
     return tracks
 
 
-def query_track_metrics(track_ids):
-    #TODO This API call can only take 100 track ids at a time, loop through the track_ids 100 at a time and return results
-    return sp.audio_features(list(track_ids.keys())[:100])
+def query_track_metrics(sp, track_ids):
+    ids = list(track_ids.keys())
+    metrics = []
+    chunks = [ids[i * 100:(i + 1) * 100] for i in range((len(ids) + 100 - 1) // 100)]
+    for chunk in chunks:
+        metrics.extend(sp.audio_features(chunk[:100]))
+    return metrics
 
 
 def set_track_metrics(tracks, metrics):
@@ -80,28 +79,29 @@ def set_metric_scores(tracks, targets):
             abs(track.valence - targets["valence"])
 
 
-def get_most_related(num_wanted, playlist_id=None):
+def get_most_related(sp, num_wanted, targets, username, playlist_id=None):
     if playlist_id is None:
-        tracks = get_all_saved_tracks()
+        tracks = get_all_saved_tracks(sp)
     else:
-        tracks = get_playlist_tracks(playlist_id)
-
-    metrics = query_track_metrics(*[tracks])
+        tracks = get_playlist_tracks(sp, playlist_id, username)
+    metrics = query_track_metrics(sp, *[tracks])
     set_track_metrics(tracks, metrics)
     set_metric_scores(tracks.items(), targets)
     tracks = [track[1] for track in list(tracks.items())]
     tracks.sort(key=lambda x: x.score)
     return tracks[:num_wanted]
 
-targets = {
-    "danceability": 1,
-    "energy": 1,
-    "acousticness": 0.5,
-    "valence": 1
-}
 
-test = get_most_related(2000)
-print(test)
-print([track.score for track in test])
-
-#7qkm4SsiK3T1nfHomYKojy
+def create_playlist(sp, data):
+    targets = {
+        "danceability": (float(data["target[danceability]"]) / 100),
+        "energy": (float(data["target[energy]"]) / 100),
+        "acousticness": (float(data["target[acousticness]"]) / 100),
+        "valence": (float(data["target[valence]"]) / 100)
+    }
+    response = sp.user_playlist_create(data["username"], data["name"])
+    playlist_url = response['external_urls']['spotify']
+    playlist_id = response["id"]
+    related_tracks = get_most_related(sp, int(data["numSongs"]), targets, data["username"], data["playlist"])
+    sp.user_playlist_add_tracks(data["username"], playlist_id, [track.id for track in related_tracks])
+    return playlist_url
