@@ -24,7 +24,6 @@ def save():
     token = request.form['token']
     sp = spotipy.Spotify(auth=token)
     url = create_playlist(sp, request.form)
-    print(url)
     return jsonify(url)
 
 
