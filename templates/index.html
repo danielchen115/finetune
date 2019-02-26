@@ -286,6 +286,9 @@ function confirmation(link){
 
 }
 function savePlaylist(){
+    $("#single-playlist-contents").hide();
+    $("#playlist-title").text("Saving playlist...");
+    $(".spinner2").show();
     var target = {
         danceability: $("#danceability").val(),
         energy: $("#energy").val(),
@@ -305,6 +308,7 @@ function savePlaylist(){
         type : 'POST',
         url : '/save',
         success: function (data) {
+            $(".spinner2").hide();
             if (data){
                 confirmation(data);
             }
