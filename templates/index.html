@@ -63,21 +63,6 @@
                         <li> <b> Configure </b> your metrics
                         <li>  <b> Save </b> the playlist
                     </ol>
-
-                    <!--<h2 class="text-center">Turn your music into a Timer!</h2>-->
-
-                    <!--<h2 class="text-center">FAQ</h2>-->
-                    <!--<p class="text-center">-->
-                        <!--Here are some answers to questions about <b> Timeify </b>-->
-                    <!--</p>-->
-                    <!--<ol>-->
-                        <!--<li> <b> How was this built? </b> This was created using Python, JS and the <a href="http://developer.spotify.com">Spotify</a> API.-->
-                        <!--<li><b> Is the source available</b> - Yes, you can find-->
-                        <!--it on <a href="https://github.com/jeffreypann/timeify">Github</a>-->
-                        <!--<li> Can I <b>Contribute</b>? - Of course! You can find the repo linked above-->
-                        <!--<li> <b> Does Timeify overwrite my playlist when I save?</b> - No, it creates a new playlist and saves it your library.-->
-                        <!--<li> I have feedback/ideas - Sure! shoot me a mail at <b>jeffreypann@gmail.com</b> -->
-                    <!--</ol>-->
               </div> 
           </div>
         </div>
@@ -85,8 +70,11 @@
       <div class="top jumbotron container-fluid">
           <p id='info' class="text-center"></p>
 
-          <div class="worker" id='playlists'> 
+          <div class="worker" id='playlists'>
+                              <p><a class="btn btn-primary btn-lg" id='allSongs' role="button">Use ALL Saved Songs</a></p>
+<h5>OR</h5>
                 <h2 class="prompt" > Pick a playlist </h2>
+
                 <img class='spinner' width='100' alt='spinner' src='static/images/ajaxSpinner.gif'>
 
                 <div class="panel panel-default">
@@ -102,6 +90,7 @@
                     </table>
                 </div>
           </div>
+
     <div class="worker" id='single-playlist'> 
                 <h2> <a id='playlist-title'></a> </h2>
                 <img class='spinner2' width='100' alt='spinner' src='static/images/ajaxSpinner.gif'>
@@ -341,7 +330,24 @@ function fetchSinglePlaylist(playlist) {
     info("");
     $("#single-playlist-contents").show();
     $("#save,#saveDropdown").attr('disabled', false);
+}
 
+function fetchLibrary() {
+    $(".worker").hide();
+    $("#single-playlist").show();
+    $("#single-playlist-contents").hide();
+    $(".spinner2").show();
+    $("#song-table tbody").empty();
+    window.scrollTo(0,0);
+    disableSaveButton();
+    songTable.clear();
+    resetState();
+    $("#playlist-title").text("All Saved Songs");
+    $(".spinner2").hide();
+    curPlaylist = ""
+    info("");
+    $("#single-playlist-contents").show();
+    $("#save,#saveDropdown").attr('disabled', false);
 }
 
 function fetchPlaylists(uid, callback) {
@@ -529,8 +535,13 @@ $(document).ready(
         $("#save,#dropSave").on('click', function() {
             savePlaylist();
         });
+
         $("#dropOverwrite").on('click', function() {
             savePlaylist(curPlaylist, false);
+        });
+
+        $("#allSongs").on('click', function() {
+            fetchLibrary();
         });
 
         $("#pick").on('click', function() {

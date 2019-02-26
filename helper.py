@@ -79,8 +79,8 @@ def set_metric_scores(tracks, targets):
             abs(track.valence - targets["valence"])
 
 
-def get_most_related(sp, num_wanted, targets, username, playlist_id=None):
-    if playlist_id is None:
+def get_most_related(sp, num_wanted, targets, username, playlist_id):
+    if playlist_id is '':
         tracks = get_all_saved_tracks(sp)
     else:
         tracks = get_playlist_tracks(sp, playlist_id, username)
