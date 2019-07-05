@@ -73,10 +73,10 @@ def set_track_metrics(tracks, metrics):
 
 def set_metric_scores(tracks, targets):
     for id, track in tracks:
-        track.score = abs(track.danceability - targets["danceability"]) + \
-            abs(track.energy - targets["energy"]) + \
-            abs(track.acousticness - targets["acousticness"]) + \
-            abs(track.valence - targets["valence"])
+        track.score = (track.danceability - targets["danceability"])**2 + \
+            (track.energy - targets["energy"]**2 + \
+            (track.acousticness - targets["acousticness"])**2 + \
+            (track.valence - targets["valence"])**2
 
 
 def get_most_related(sp, num_wanted, targets, username, playlist_id):
