@@ -74,7 +74,7 @@ def set_track_metrics(tracks, metrics):
 def set_metric_scores(tracks, targets):
     for id, track in tracks:
         track.score = (track.danceability - targets["danceability"])**2 + \
-            (track.energy - targets["energy"]**2 + \
+            (track.energy - targets["energy"])**2 + \
             (track.acousticness - targets["acousticness"])**2 + \
             (track.valence - targets["valence"])**2
 
