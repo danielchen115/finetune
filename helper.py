@@ -3,12 +3,6 @@ import sys
 import spotipy
 import spotipy.util as util
 
-
-os.environ["SPOTIPY_CLIENT_ID"] = 'e4fecf947d534799b152a18023bae635'
-os.environ["SPOTIPY_CLIENT_SECRET"] = '85c54c906e6b4695858061f2291f9838'
-os.environ["SPOTIPY_REDIRECT_URI"] = 'https://spotify-finetune.herokuapp.com'
-
-
 class Track:
     danceability = 0
     energy = 0
