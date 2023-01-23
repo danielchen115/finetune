@@ -1,4 +1,4 @@
-spotipy==2.4.4
+spotipy==2.22.1
 requests==2.21.0
 Flask==1.0.2
 gunicorn==19.9.0
